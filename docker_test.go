@@ -122,3 +122,34 @@ func TestExternalVolume(t *testing.T) {
 	assert.Equal(t, ev2.Name, "")
 	assert.Equal(t, ev2.Provider, "")
 }
+
+func TestDockerPersistentVolume(t *testing.T) {
+	docker := NewDockerApplication()
+
+	pVol := &PersistentVolume{Size: 2048}
+	pVol.SetType(PersistentVolumeTypeRoot)
+	pVol.AddConstraint("bat")
+
+	assert.Equal(t, 1, len(*pVol.Constraints))
+	assert.Equal(t, []string{"bat"}, (*pVol.Constraints)[0])
+	pVol.EmptyConstraints()
+	assert.NotNil(t, pVol.Constraints)
+	assert.Equal(t, 0, len(*pVol.Constraints))
+
+	container := docker.Container.Volume("/host", "/container", "RW")
+	assert.Equal(t, 1, len(*docker.Container.Volumes))
+
+	vol := (*container.Volumes)[0]
+	pVol = vol.SetPersistentVolume(256)
+	pVol.SetType(PersistentVolumeTypeMount)
+	pVol.SetMaxSize(128)
+
+	assert.Equal(t, "/host", vol.HostPath)
+	assert.Equal(t, "/container", vol.ContainerPath)
+	assert.Equal(t, "RW", vol.Mode)
+	assert.Equal(t, 256, vol.Persistent.Size)
+	assert.NotNil(t, vol.Persistent.Type)
+	assert.Equal(t, PersistentVolumeTypeMount, *vol.Persistent.Type)
+	assert.NotNil(t, vol.Persistent.MaxSize)
+	assert.Equal(t, 128, *vol.Persistent.MaxSize)
+}
