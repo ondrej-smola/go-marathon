@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createPortMapping(containerPort int, protocol string) *PortMapping {
@@ -125,31 +126,29 @@ func TestExternalVolume(t *testing.T) {
 
 func TestDockerPersistentVolume(t *testing.T) {
 	docker := NewDockerApplication()
-
-	pVol := &PersistentVolume{Size: 2048}
-	pVol.SetType(PersistentVolumeTypeRoot)
-	pVol.AddConstraint("bat")
-
-	assert.Equal(t, 1, len(*pVol.Constraints))
-	assert.Equal(t, []string{"bat"}, (*pVol.Constraints)[0])
-	pVol.EmptyConstraints()
-	assert.NotNil(t, pVol.Constraints)
-	assert.Equal(t, 0, len(*pVol.Constraints))
-
 	container := docker.Container.Volume("/host", "/container", "RW")
-	assert.Equal(t, 1, len(*docker.Container.Volumes))
+	require.Equal(t, 1, len(*docker.Container.Volumes))
 
-	vol := (*container.Volumes)[0]
-	pVol = vol.SetPersistentVolume(256)
+	pVol := (*container.Volumes)[0].SetPersistentVolume(256)
 	pVol.SetType(PersistentVolumeTypeMount)
 	pVol.SetMaxSize(128)
+	pVol.AddConstraint("cons1", "EQUAL", "tag1")
+	pVol.AddConstraint("cons2", "UNIQUE")
 
-	assert.Equal(t, "/host", vol.HostPath)
-	assert.Equal(t, "/container", vol.ContainerPath)
-	assert.Equal(t, "RW", vol.Mode)
-	assert.Equal(t, 256, vol.Persistent.Size)
-	assert.NotNil(t, vol.Persistent.Type)
-	assert.Equal(t, PersistentVolumeTypeMount, *vol.Persistent.Type)
-	assert.NotNil(t, vol.Persistent.MaxSize)
-	assert.Equal(t, 128, *vol.Persistent.MaxSize)
+	assert.Equal(t, 256, pVol.Size)
+	assert.Equal(t, PersistentVolumeTypeMount, pVol.Type)
+	assert.NotNil(t, pVol.MaxSize)
+	assert.Equal(t, 128, pVol.MaxSize)
+
+	if assert.NotNil(t, pVol.Constraints) {
+		constraints := *pVol.Constraints
+		require.Equal(t, 2, len(constraints))
+		assert.Equal(t, []string{"cons1", "EQUAL", "tag1"}, constraints[0])
+		assert.Equal(t, []string{"cons2", "UNIQUE"}, constraints[1])
+	}
+
+	pVol.EmptyConstraints()
+	if assert.NotNil(t, pVol.Constraints) {
+		assert.Empty(t, len(*pVol.Constraints))
+	}
 }

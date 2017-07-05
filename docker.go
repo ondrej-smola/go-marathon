@@ -64,16 +64,16 @@ const (
 // PersistentVolume declares a Volume to be Persistent, and sets
 // the size (in MiB) and optional type, max size (MiB) and constraints for the Volume.
 type PersistentVolume struct {
-	Type        *PersistentVolumeType `json:"type,omitempty"`
-	Size        int                   `json:"size,omitempty"`
-	MaxSize     *int                  `json:"maxSize,omitempty"`
-	Constraints *[][]string           `json:"constraints,omitempty"`
+	Type        PersistentVolumeType `json:"type,omitempty"`
+	Size        int                  `json:"size"`
+	MaxSize     int                  `json:"maxSize,omitempty"`
+	Constraints *[][]string          `json:"constraints,omitempty"`
 }
 
-// SetType sets the type of mesos disk resource to use; root if nil
+// SetType sets the type of mesos disk resource to use
 //		type:	       PersistentVolumeType enum
 func (p *PersistentVolume) SetType(tp PersistentVolumeType) *PersistentVolume {
-	p.Type = &tp
+	p.Type = tp
 	return p
 }
 
@@ -88,7 +88,7 @@ func (p *PersistentVolume) SetSize(size int) *PersistentVolume {
 // does not apply to root or path disk resource types
 //		maxSize:	size in MiB
 func (p *PersistentVolume) SetMaxSize(maxSize int) *PersistentVolume {
-	p.MaxSize = &maxSize
+	p.MaxSize = maxSize
 	return p
 }
 
@@ -102,7 +102,6 @@ func (p *PersistentVolume) AddConstraint(constraints ...string) *PersistentVolum
 	c := *p.Constraints
 	c = append(c, constraints)
 	p.Constraints = &c
-
 	return p
 }
 
@@ -111,7 +110,6 @@ func (p *PersistentVolume) AddConstraint(constraints ...string) *PersistentVolum
 // keep the current value)
 func (p *PersistentVolume) EmptyConstraints() *PersistentVolume {
 	p.Constraints = &[][]string{}
-
 	return p
 }
 
