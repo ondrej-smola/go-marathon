@@ -160,11 +160,8 @@ func (container *Container) EmptyVolumes() *Container {
 }
 
 // SetPersistentVolume defines persistent properties for volume
-//      size: size of the volume in MiB
-func (v *Volume) SetPersistentVolume(size int) *PersistentVolume {
-	ev := &PersistentVolume{
-		Size: size,
-	}
+func (v *Volume) SetPersistentVolume() *PersistentVolume {
+	ev := &PersistentVolume{}
 	v.Persistent = ev
 	return ev
 }

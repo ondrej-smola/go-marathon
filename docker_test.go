@@ -129,15 +129,15 @@ func TestDockerPersistentVolume(t *testing.T) {
 	container := docker.Container.Volume("/host", "/container", "RW")
 	require.Equal(t, 1, len(*docker.Container.Volumes))
 
-	pVol := (*container.Volumes)[0].SetPersistentVolume(256)
+	pVol := (*container.Volumes)[0].SetPersistentVolume()
 	pVol.SetType(PersistentVolumeTypeMount)
+	pVol.SetSize(256)
 	pVol.SetMaxSize(128)
 	pVol.AddConstraint("cons1", "EQUAL", "tag1")
 	pVol.AddConstraint("cons2", "UNIQUE")
 
 	assert.Equal(t, 256, pVol.Size)
 	assert.Equal(t, PersistentVolumeTypeMount, pVol.Type)
-	assert.NotNil(t, pVol.MaxSize)
 	assert.Equal(t, 128, pVol.MaxSize)
 
 	if assert.NotNil(t, pVol.Constraints) {
