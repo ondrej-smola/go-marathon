@@ -22,6 +22,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"net/http"
 )
 
 const (
@@ -392,6 +393,11 @@ func TestConnectToSSEFailure(t *testing.T) {
 
 func TestRegisterSEESubscriptionReconnectsStreamOnError(t *testing.T) {
 	clientCfg := NewDefaultConfig()
+	clientCfg.HTTPClient = &http.Client{
+		// set timeout to small fraction of SSEConnectWaitTime to give client enough time
+		// to detect error and reconnect during sleep
+		Timeout: SSEConnectWaitTime / 10,
+	}
 	clientCfg.EventsTransport = EventsTransportSSE
 	config := configContainer{client: &clientCfg}
 
