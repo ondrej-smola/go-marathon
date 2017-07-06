@@ -103,6 +103,12 @@ func (r *marathonClient) registerSubscription() error {
 	case EventsTransportCallback:
 		return r.registerCallbackSubscription()
 	case EventsTransportSSE:
+		if timeout := r.client.config.HTTPClient.Timeout; timeout > 0 {
+			return fmt.Errorf(
+				"http client timeout must be zero (got %v) when EventsTransportSSE is used",
+				timeout,
+			)
+		}
 		r.registerSSESubscription()
 		return nil
 	default:
@@ -180,7 +186,6 @@ func (r *marathonClient) registerSSESubscription() {
 				<-time.After(5 * time.Second)
 				continue
 			}
-
 			err = r.listenToSSE(stream)
 			stream.Close()
 			r.debugLog.Printf("Error on SSE subscription: %s", err)

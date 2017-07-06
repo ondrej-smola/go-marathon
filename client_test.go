@@ -17,7 +17,6 @@ limitations under the License.
 package marathon
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -35,7 +34,7 @@ func TestNewClient(t *testing.T) {
 
 	conf := cl.(*marathonClient).config
 
-	assert.Equal(t, conf.HTTPClient, http.DefaultClient)
+	assert.Equal(t, conf.HTTPClient, defaultHttpClient)
 	assert.Equal(t, conf.PollingWaitTime, defaultPollingWaitTime)
 }
 

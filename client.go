@@ -24,6 +24,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -154,6 +155,18 @@ var (
 	ErrMarathonDown = errors.New("all the Marathon hosts are presently down")
 	// ErrTimeoutError is thrown when the operation has timed out
 	ErrTimeoutError = errors.New("the operation has timed out")
+
+	// Default http client used when creating new marathon client and no set
+	// in provided config
+	defaultHttpClient = &http.Client{
+		Transport: &http.Transport{
+			Dial: (&net.Dialer{
+				Timeout: 5 * time.Second,
+			}).Dial,
+			ResponseHeaderTimeout: 10 * time.Second,
+			TLSHandshakeTimeout:   5 * time.Second,
+		},
+	}
 )
 
 // EventsChannelContext holds contextual data for an EventsChannel.
@@ -198,7 +211,7 @@ type newRequestError struct {
 func NewClient(config Config) (Marathon, error) {
 	// step: if no http client, set to default
 	if config.HTTPClient == nil {
-		config.HTTPClient = http.DefaultClient
+		config.HTTPClient = defaultHttpClient
 	}
 
 	// step: if no polling wait time is set, default to 500 milliseconds.
