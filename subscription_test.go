@@ -22,7 +22,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http"
 )
 
 const (
@@ -389,23 +388,6 @@ func TestConnectToSSEFailure(t *testing.T) {
 	// No Marathon member is up, we should get an error
 	_, err := client.connectToSSE()
 	assert.Error(t, err, "expected error in connectToSSE when all cluster members are down")
-}
-
-func TestRegisterSEESubscriptionFailsWhenClientTimeoutIsSet(t *testing.T) {
-	clientCfg := NewDefaultConfig()
-	clientCfg.HTTPClient = &http.Client{
-		Timeout: 10 * time.Second,
-	}
-
-	clientCfg.EventsTransport = EventsTransportSSE
-	config := configContainer{client: &clientCfg}
-
-	endpoint := newFakeMarathonEndpoint(t, &config)
-	defer endpoint.Close()
-
-	_, err := endpoint.Client.AddEventsListener(EventIDApplications)
-
-	assert.Error(t, err, "http client timeout must be zero (got 10s) when EventsTransportSSE is used")
 }
 
 func TestRegisterSEESubscriptionReconnectsStreamOnError(t *testing.T) {

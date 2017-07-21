@@ -156,9 +156,10 @@ var (
 	// ErrTimeoutError is thrown when the operation has timed out
 	ErrTimeoutError = errors.New("the operation has timed out")
 
-	// Default http client used when creating new marathon client and no set
-	// in provided config
-	defaultHttpClient = &http.Client{
+	// Default http client used for SSE subscription requests
+	// It is invalid to set client.Timeout because it includes time to read response so
+	// set dial, tls handshake and response header timeouts instead
+	defaultHttpSSEClient = &http.Client{
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
 				Timeout: 5 * time.Second,
@@ -166,6 +167,11 @@ var (
 			ResponseHeaderTimeout: 10 * time.Second,
 			TLSHandshakeTimeout:   5 * time.Second,
 		},
+	}
+
+	// Default http client used for non SSE requests
+	defaultHttpClient = &http.Client{
+		Timeout: 10 * time.Second,
 	}
 )
 
@@ -212,6 +218,15 @@ func NewClient(config Config) (Marathon, error) {
 	// step: if no http client, set to default
 	if config.HTTPClient == nil {
 		config.HTTPClient = defaultHttpClient
+	}
+
+	if config.HTTPSSEClient == nil {
+		config.HTTPSSEClient = defaultHttpSSEClient
+	} else if config.HTTPSSEClient.Timeout != 0 {
+		return nil, fmt.Errorf(
+			"HTTPSSEClient.Timeout cannot be set (got %v)",
+			config.HTTPSSEClient.Timeout,
+		)
 	}
 
 	// step: if no polling wait time is set, default to 500 milliseconds.

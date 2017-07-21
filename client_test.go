@@ -19,6 +19,9 @@ package marathon
 import (
 	"testing"
 
+	"net/http"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,7 +38,19 @@ func TestNewClient(t *testing.T) {
 	conf := cl.(*marathonClient).config
 
 	assert.Equal(t, conf.HTTPClient, defaultHttpClient)
+	assert.Equal(t, conf.HTTPSSEClient, defaultHttpSSEClient)
 	assert.Equal(t, conf.PollingWaitTime, defaultPollingWaitTime)
+}
+
+func TestInvalidConfigHTTPSSEClientTimeoutIsSet(t *testing.T) {
+	config := Config{
+		URL: "http://marathon",
+		HTTPSSEClient: &http.Client{
+			Timeout: time.Second,
+		},
+	}
+	_, err := NewClient(config)
+	assert.Error(t, err)
 }
 
 func TestInvalidConfig(t *testing.T) {

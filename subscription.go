@@ -103,12 +103,6 @@ func (r *marathonClient) registerSubscription() error {
 	case EventsTransportCallback:
 		return r.registerCallbackSubscription()
 	case EventsTransportSSE:
-		if timeout := r.client.config.HTTPClient.Timeout; timeout > 0 {
-			return fmt.Errorf(
-				"http client timeout must be zero (got %v) when EventsTransportSSE is used",
-				timeout,
-			)
-		}
 		r.registerSSESubscription()
 		return nil
 	default:
@@ -214,10 +208,10 @@ func (r *marathonClient) connectToSSE() (*eventsource.Stream, error) {
 		// its underlying fields for performance reasons. See note that at least the Transport
 		// should be reused here: https://golang.org/pkg/net/http/#Client
 		httpClient := &http.Client{
-			Transport:     r.config.HTTPClient.Transport,
-			CheckRedirect: r.config.HTTPClient.CheckRedirect,
-			Jar:           r.config.HTTPClient.Jar,
-			Timeout:       r.config.HTTPClient.Timeout,
+			Transport:     r.config.HTTPSSEClient.Transport,
+			CheckRedirect: r.config.HTTPSSEClient.CheckRedirect,
+			Jar:           r.config.HTTPSSEClient.Jar,
+			Timeout:       r.config.HTTPSSEClient.Timeout,
 		}
 
 		stream, err := eventsource.SubscribeWith("", httpClient, request)
