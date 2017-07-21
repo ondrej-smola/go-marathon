@@ -100,6 +100,7 @@ type Application struct {
 	LastTaskFailure       *LastTaskFailure        `json:"lastTaskFailure,omitempty"`
 	Fetch                 *[]Fetch                `json:"fetch,omitempty"`
 	IPAddressPerTask      *IPAddressPerTask       `json:"ipAddress,omitempty"`
+	Residency             *Residency              `json:"residence,omitempty"`
 	Secrets               *map[string]Secret      `json:"-"`
 }
 
@@ -600,6 +601,13 @@ func (r *Application) SetUnreachableStrategy(us UnreachableStrategy) *Applicatio
 // the unreachable strategy set (setting it to nil will keep the current value).
 func (r *Application) EmptyUnreachableStrategy() *Application {
 	r.UnreachableStrategy = &UnreachableStrategy{}
+	return r
+}
+
+func (r *Application) SetResidency(whenLost TaskLostBehaviorType) *Application {
+	r.Residency = &Residency{
+		TaskLostBehavior: whenLost,
+	}
 	return r
 }
 
