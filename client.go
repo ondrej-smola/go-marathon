@@ -156,10 +156,10 @@ var (
 	// ErrTimeoutError is thrown when the operation has timed out
 	ErrTimeoutError = errors.New("the operation has timed out")
 
-	// Default http client used for SSE subscription requests
+	// Default HTTP client used for SSE subscription requests
 	// It is invalid to set client.Timeout because it includes time to read response so
 	// set dial, tls handshake and response header timeouts instead
-	defaultHttpSSEClient = &http.Client{
+	defaultHTTPSSEClient = &http.Client{
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
 				Timeout: 5 * time.Second,
@@ -169,8 +169,8 @@ var (
 		},
 	}
 
-	// Default http client used for non SSE requests
-	defaultHttpClient = &http.Client{
+	// Default HTTP client used for non SSE requests
+	defaultHTTPClient = &http.Client{
 		Timeout: 10 * time.Second,
 	}
 )
@@ -217,14 +217,14 @@ type newRequestError struct {
 func NewClient(config Config) (Marathon, error) {
 	// step: if no http client, set to default
 	if config.HTTPClient == nil {
-		config.HTTPClient = defaultHttpClient
+		config.HTTPClient = defaultHTTPClient
 	}
 
 	if config.HTTPSSEClient == nil {
-		config.HTTPSSEClient = defaultHttpSSEClient
+		config.HTTPSSEClient = defaultHTTPSSEClient
 	} else if config.HTTPSSEClient.Timeout != 0 {
 		return nil, fmt.Errorf(
-			"HTTPSSEClient.Timeout cannot be set (got %v)",
+			"Global timeout must not be set on custom HTTP client for SSE connections (got %s)",
 			config.HTTPSSEClient.Timeout,
 		)
 	}

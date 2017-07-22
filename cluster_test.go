@@ -69,7 +69,7 @@ func TestGetMember(t *testing.T) {
 		},
 	}
 	for _, x := range cases {
-		cluster, err := newCluster(&httpClient{config: Config{HTTPClient: defaultHttpClient}}, x.MarathonURL, x.isDCOS)
+		cluster, err := newCluster(&httpClient{config: Config{HTTPClient: defaultHTTPClient}}, x.MarathonURL, x.isDCOS)
 		assert.NoError(t, err)
 		member, err := cluster.getMember()
 		assert.NoError(t, err)
@@ -168,5 +168,5 @@ func TestInvalidClusterHosts(t *testing.T) {
 }
 
 func newStandardCluster(url string) (*cluster, error) {
-	return newCluster(&httpClient{config: Config{HTTPClient: defaultHttpClient}}, url, false)
+	return newCluster(&httpClient{config: Config{HTTPClient: defaultHTTPClient}}, url, false)
 }

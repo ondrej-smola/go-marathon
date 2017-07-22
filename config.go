@@ -50,9 +50,9 @@ type Config struct {
 	DCOSToken string
 	// LogOutput the output for debug log messages
 	LogOutput io.Writer
-	// HTTPClient is the http client
+	// HTTPClient is the HTTP client
 	HTTPClient *http.Client
-	// HTTPClient is the http client used for sse subscriptions, can't have client.Timeout set
+	// HTTPSSEClient is the HTTP client used for SSE subscriptions, can't have client.Timeout set
 	HTTPSSEClient *http.Client
 	// wait time (in milliseconds) between repetitive requests to the API during polling
 	PollingWaitTime time.Duration
