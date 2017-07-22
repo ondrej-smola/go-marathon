@@ -604,10 +604,20 @@ func (r *Application) EmptyUnreachableStrategy() *Application {
 	return r
 }
 
+// SetResidency sets behavior for resident applications, an application is resident when
+// it has local persistent volumes set
 func (r *Application) SetResidency(whenLost TaskLostBehaviorType) *Application {
 	r.Residency = &Residency{
 		TaskLostBehavior: whenLost,
 	}
+	return r
+}
+
+// EmptyResidency explicitly empties the residency -- use this if
+// you need to empty the residency of an application that already has
+// the residency set (setting it to nil will keep the current value).
+func (r *Application) EmptyResidency() *Application {
+	r.Residency = &Residency{}
 	return r
 }
 
