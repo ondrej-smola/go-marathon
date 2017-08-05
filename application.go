@@ -100,7 +100,7 @@ type Application struct {
 	LastTaskFailure       *LastTaskFailure        `json:"lastTaskFailure,omitempty"`
 	Fetch                 *[]Fetch                `json:"fetch,omitempty"`
 	IPAddressPerTask      *IPAddressPerTask       `json:"ipAddress,omitempty"`
-	Residency             *Residency              `json:"residence,omitempty"`
+	Residency             *Residency              `json:"residency,omitempty"`
 	Secrets               *map[string]Secret      `json:"-"`
 }
 

@@ -22,10 +22,10 @@ import "time"
 type TaskLostBehaviorType string
 
 const (
-	// TaskLostBehaviorTypeWaitForever sets to don`t take any action when the resident task is lost
+	// TaskLostBehaviorTypeWaitForever indicates to not take any action when the resident task is lost
 	TaskLostBehaviorTypeWaitForever TaskLostBehaviorType = "WAIT_FOREVER"
-	// TaskLostBehaviorTypeRelaunchAfterTimeout sets to try relaunch the lost resident task
-	// on another node after relaunch escalation timeout
+	// TaskLostBehaviorTypeWaitForever indicates to try relaunching the lost resident task on
+	// another node after the relaunch escalation timeout has elapsed
 	TaskLostBehaviorTypeRelaunchAfterTimeout TaskLostBehaviorType = "RELAUNCH_AFTER_TIMEOUT"
 )
 
