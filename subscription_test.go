@@ -17,11 +17,10 @@ limitations under the License.
 package marathon
 
 import (
-	"testing"
-	"time"
-
 	"net"
 	"net/http"
+	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
