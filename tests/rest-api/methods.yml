@@ -481,10 +481,10 @@
             10000
         ],
         "requirePorts": false,
-            "residency" : {
-                "taskLostBehavior" : "RELAUNCH_AFTER_TIMEOUT",
-                "relaunchEscalationTimeoutSeconds" : 60
-            },
+        "residency" : {
+            "taskLostBehavior" : "RELAUNCH_AFTER_TIMEOUT",
+            "relaunchEscalationTimeoutSeconds" : 60
+        },
         "storeUrls": [],
         "tasks": [
             {
